@@ -1,4 +1,4 @@
-from testcase import ApiTestCaseRunner
+from .testcase import ApiTestCaseRunner
 import argparse
 import logging
 import sys
@@ -20,19 +20,19 @@ def parse_cmdln_args():
 
 def run():
     log_level, test_case_file, test_suite_file = parse_cmdln_args()
-    print log_level, test_case_file, test_suite_file
+    print(log_level, test_case_file, test_suite_file)
     logging.basicConfig()
     logger = logging.getLogger('rester')
     logger.setLevel(log_level)
     test_runner = ApiTestCaseRunner()
     if test_case_file is not None:
-        print "test case has been specified"
+        print("test case has been specified")
         test_runner.run_test_case(test_case_file)
     elif test_suite_file is not None:
-        print "test suite has been specified"
+        print("test suite has been specified")
         test_runner.run_test_suite(test_suite_file)
     else:
-        print "running the default test case"
+        print("running the default test case")
         test_runner.run_test_case(DEFAULT_TEST_CASE)
     test_runner.display_report()
     return any((result.get('failed') for result in test_runner.results))

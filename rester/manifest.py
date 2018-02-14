@@ -16,7 +16,7 @@ class Variables(object):
         self._variables = variables or {}
 
     def __iter__(self):
-        for k, v in self._variables.iteritems():
+        for k, v in self._variables.items():
             yield k, v
 
     def get(self, k, default):
@@ -55,7 +55,7 @@ class Variables(object):
 # Module level functions
 def is_string(expression):
     #self.logger.debug(" _is_string : %s ", type(expression))
-    return expression and (isinstance(expression, unicode) or isinstance(expression, str))
+    return expression and (isinstance(expression, str) or isinstance(expression, str))
 
 
 def is_number(expression):

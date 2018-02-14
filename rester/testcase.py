@@ -37,28 +37,28 @@ class ApiTestCaseRunner:
         for result in self.results:
             if not result['failed']:
                 continue
-            print "\n\n ############################ FAILED ############################"
+            print("\n\n ############################ FAILED ############################")
             for e in result['failed']:
-                print bcolors.FAIL, result.get('name'), ":", e['name']
-                print bcolors.ENDC
+                print(bcolors.FAIL, result.get('name'), ":", e['name'])
+                print(bcolors.ENDC)
                 for i, error in enumerate(e['errors']):
-                    print "%d." % i
-                    print error
-                    print
-                print "-------- LOG OUTPUT --------"
-                print e['logs']
-                print "---------------------------"
+                    print("%d." % i)
+                    print(error)
+                    print()
+                print("-------- LOG OUTPUT --------")
+                print(e['logs'])
+                print("---------------------------")
 
-        print "\n\n ############################ RESULTS ############################"
+        print("\n\n ############################ RESULTS ############################")
         for result in self.results:
             c = bcolors.OKGREEN
             if result.get('failed'):
                 c = bcolors.FAIL
 
-            print c, result.get('name'),
+            print(c, result.get('name'), end=' ')
             for k in ['passed', 'failed', 'skipped']:
-                print "%s: %d " % (k, len(result.get(k))),
-            print bcolors.ENDC
+                print("%s: %d " % (k, len(result.get(k))), end=' ')
+            print(bcolors.ENDC)
             #print c, yaml.dump(result, default_flow_style=False,), bcolors.ENDC
 
 

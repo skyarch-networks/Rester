@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 # Unit test import
 from rester.struct import DictWrapper

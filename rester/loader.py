@@ -18,7 +18,7 @@ class TestSuite(object):
             self._load(data)
 
     def _load(self, data):
-        self.variables.update(data.get('globals', {}).get('variables', {}).items())
+        self.variables.update(list(data.get('globals', {}).get('variables', {}).items()))
         for case in data['test_cases']:
             filename = os.path.join(os.path.dirname(self.filename), case)
             self.test_cases.append(TestCase(self, filename))
@@ -51,7 +51,7 @@ class TestCase(object):
 
     def _load(self, data):
         self.data = DictWrapper(data)
-        self.variables.update(data.get('globals', {}).get('variables', {}).items())
+        self.variables.update(list(data.get('globals', {}).get('variables', {}).items()))
 
 
 def load(filename, fh):

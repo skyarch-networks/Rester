@@ -7,7 +7,7 @@ class DictWrapper(object):
             for index, item in enumerate(d):
                 setattr(self, "[%s]" % index, DictWrapper(item))
         else:
-            for key, value in d.items():
+            for key, value in list(d.items()):
                 if isinstance(value, list):
                     setattr(self, key, [DictWrapper(x) if isinstance(x, dict) else x for x in value])
                     setattr(self, "%s._length" % key, len(value))

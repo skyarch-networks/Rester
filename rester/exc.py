@@ -143,7 +143,7 @@ class TestCaseExec(object):
                     value = 'Object'
                     json_eval_expr = {}
 
-                if type(json_eval_expr) == unicode:
+                if type(json_eval_expr) == str:
                     json_eval_expr = ''
 
                 value = eval(json_types[value])
@@ -170,7 +170,7 @@ class TestCaseExec(object):
             value = self.case.variables.expand(value)
             self.logger.debug(' ---> final evaluated expression  : %s and type %s ', value, type(value))
 
-            if isinstance(json_eval_expr, basestring):
+            if isinstance(json_eval_expr, str):
                 value = str(value)
             # construct the logical assert expression
             if final_lg_op != 'exec':
@@ -206,7 +206,7 @@ def _evaluate(clause, value):
 
 
 def check_for_logical_op(expression):
-    if expression and isinstance(expression, basestring):
+    if expression and isinstance(expression, str):
         #self.logger.debug("_check_for_logical_op : expression %s", expression)
         oprtr_regex = re.compile("-lt|-le|-gt|-ge|-eq|-ne|exec")
         match = re.match(oprtr_regex, expression)
