@@ -1,7 +1,7 @@
 name: "AWS Test"
 globals:
   variables:
-    baseApiUrl: "https://xxxxxx.execute-api.xxxxxx.amazonaws.com/api"
+    baseApiUrl: "https://xxxxxx.execute-api.xxxxxx.amazonaws.com/some-api-endpoint"
     region_name: "ap-nxxxxx"
     identity_pool_id: "ap-xxxxxx"
 
@@ -18,7 +18,7 @@ testSteps:
       payload:
         "message": "xxxxxxx"
 
-  - name: "Get Verifications"  # Example of a Failed Test
+  - name: "Get json data  # Example of a Failed Test
     apiUrl: "{baseApiUrl}/xxxxx"
     region_name: "{region_name}"
     identity_pool_id: "{identity_pool_id}"
