@@ -1,5 +1,5 @@
-Rester
-=======
+Rester(Enhanced AWS CognitoIDPool)
+===================================
 
 Framework for testing (RESTful) HTTP APIs
 ----------------------------------
