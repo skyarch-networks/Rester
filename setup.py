@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(name='Rester',
-    version='1.0.1',
-    author='Rajeev Chitamoor',
-    author_email='rajeev@chitamoor.com',
-    url='https://github.com/chitamoor/rester',
+    version='1.0.2',
+    author='Shota Tsunehiro',
+    author_email='tomoka319@gmail.com',
+    url='https://github.com/skyarch-networks/rester',
     license='LICENSE.txt',
     packages=['rester'],
     entry_points={
