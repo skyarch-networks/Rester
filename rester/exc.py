@@ -2,6 +2,7 @@ from logging import getLogger
 from rester.http import HttpClient
 from rester.struct import DictWrapper
 from testfixtures import log_capture
+from rester.aws import aws_login
 import collections
 import re
 import traceback
@@ -85,7 +86,17 @@ class TestCaseExec(object):
 
             url = self.case.variables.expand(test_step.apiUrl)
             self.logger.debug('Evaluated URL : %s', url)
-            response_wrapper = http_client.request(url, method, headers, params, is_raw)
+
+            # Add Get Aws Token from cognito
+
+            if self.case.variables.expand(test_step.region_name):
+                auth, token = aws_login.cognito_login(self, test_step)
+                self.logger.info(token)
+                headers.setdefault("x-amz-security-token", token)
+                self.logger.info(headers)
+                response_wrapper = http_client.aws_request(url, method, headers, params, auth, is_raw)
+            else:
+                response_wrapper = http_client.request(url, method, headers, params, is_raw)
 
             # expected_status = getattr(getattr(test_step, 'asserts'), 'status', 200)
             # if response_wrapper.status != expected_status:
