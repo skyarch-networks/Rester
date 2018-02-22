@@ -21,12 +21,12 @@ class aws_login:
         service = 'execute-api'
         return AWS4Auth(accesskey, secretkey, region, service, session_token=session_token), session_token
 
-    def cognito_login(self, username, password, pool_id, client_id, region, account_id):
-        aws = AWSSRP(username=username, password=password, pool_id=pool_id, client_id=client_id, pool_region=region)
+    def cognito_login(self, username, password, pool_id, client_id, region, account_id, user_pool_id):
+        aws = AWSSRP(username=username, password=password, pool_id=user_pool_id, client_id=client_id, pool_region=region)
         tokens = aws.authenticate_user()
         id_token = tokens['AuthenticationResult']['IdToken']
 
-        logins = {'cognito-idp.' + region + '.amazonaws.com/' + pool_id: id_token}
+        logins = {'cognito-idp.' + region + '.amazonaws.com/' + user_pool_id: id_token}
 
         client = boto3.client('cognito-identity', region_name=region)
         cognito_identity_id = client.get_id(

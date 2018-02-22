@@ -8,6 +8,7 @@ globals:
     password: "password"
     client_id: "cognito client id"
     account_id: "aws account id"
+    user_pool_id: "cognito user pool id"
 
 testSteps:
   - name: "Open Top"
