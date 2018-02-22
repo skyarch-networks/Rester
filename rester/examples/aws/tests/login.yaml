@@ -1,0 +1,35 @@
+name: "AWS Test"
+globals:
+  variables:
+    baseApiUrl: "https://xxxxxx.execute-api.xxxxxx.amazonaws.com/some-api-endpoint"
+    region_name: "ap-nxxxxx"
+    identity_pool_id: "ap-xxxxxx"
+    username: "username"
+    password: "password"
+    client_id: "cognito client id"
+    account_id: "aws account id"
+
+testSteps:
+  - name: "Open Top"
+    apiUrl: "{baseApiUrl}/"  # pass params in the URL
+    method: "get"
+    headers:
+    asserts:
+      headers:
+        status: 200
+      payload:
+        "message": "xxxxxxx"
+
+  - name: "Get json data"  # Example of a Failed Test
+    apiUrl: "{baseApiUrl}/xxxxx"
+    method: "get"
+    headers:
+
+    params:
+      signature: "xxxxx"
+
+    asserts:
+      headers:
+        status: 200
+      payload:
+        "message": "xxxxxxxx"

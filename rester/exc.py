@@ -27,8 +27,10 @@ class TestCaseExec(object):
         auth = ""
         token = ""
         values = self.case.variables._variables
+        if values.keys() >= {'username', 'password', 'client_id', 'account_id', 'region_name', 'identity_pool_id'}:
+            auth, token = aws_login.cognito_login(self, values['username'], values['password'], values['identity_pool_id'], values['client_id'], values['region_name'], values['account_id'])
         if values.keys() >= {'region_name', 'identity_pool_id'}:
-           auth, token = aws_login.cognito_login(self, values['region_name'], values['identity_pool_id'])
+           auth, token = aws_login.cognito_auth(self, values['region_name'], values['identity_pool_id'])
 
         for step in self.case.steps:
             self.logger.debug('Test Step Name : %s', step.name)

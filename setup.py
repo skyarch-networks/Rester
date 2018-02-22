@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='Rester',
-    version='1.0.2',
+    version='1.0.2.1',
     author='Shota Tsunehiro',
     author_email='tomoka319@gmail.com',
     url='https://github.com/skyarch-networks/rester',
@@ -13,5 +13,5 @@ setup(name='Rester',
     test_suite="test",
     description='Rest API Testing',
     long_description=open('README.md').read(),
-    install_requires=["requests", "testfixtures", "PyYAML>=3.9", "boto3", "requests-aws4auth"],
+    install_requires=["requests", "testfixtures", "PyYAML>=3.9", "boto3", "requests-aws4auth", "warrant"],
 )
