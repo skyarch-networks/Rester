@@ -24,6 +24,11 @@ class TestCaseExec(object):
     def __call__(self):
         # What was this?
         #skip_all_subsequent_tests = False
+        auth = ""
+        token = ""
+        values = self.case.variables._variables
+        if values.keys() >= {'region_name', 'identity_pool_id'}:
+           auth, token = aws_login.cognito_login(self, values['region_name'], values['identity_pool_id'])
 
         for step in self.case.steps:
             self.logger.debug('Test Step Name : %s', step.name)
@@ -34,7 +39,8 @@ class TestCaseExec(object):
 
             @log_capture()
             def _run(l):
-                failures = self._execute_test_step(step)
+
+                failures = self._execute_test_step(step, auth, token)
                 return failures, l
 
             f, logs = _run()
@@ -66,7 +72,15 @@ class TestCaseExec(object):
                 params[key] = self.case.variables.expand(value)
         return params
 
-    def _execute_test_step(self, test_step):
+    def _build_data_dict(self, test_step):
+        data = {}
+        if hasattr(test_step, 'payload') and test_step.payload is not None:
+            for key, value in test_step.payload.items().items():
+                data[key] = self.case.variables.expand(value)
+                self.logger.info(data[key])
+        return data
+
+    def _execute_test_step(self, test_step, auth, token):
         http_client = HttpClient(**self.case.request_opts)
         failures = Failure([], None)
         try:
@@ -87,13 +101,10 @@ class TestCaseExec(object):
             url = self.case.variables.expand(test_step.apiUrl)
             self.logger.debug('Evaluated URL : %s', url)
 
-            # Add Get Aws Token from cognito
+            # Add Aws Token from cognito
 
-            if self.case.variables.expand(test_step.region_name):
-                auth, token = aws_login.cognito_login(self, test_step)
-                self.logger.info(token)
+            if token is not None and auth is not None:
                 headers.setdefault("x-amz-security-token", token)
-                self.logger.info(headers)
                 response_wrapper = http_client.aws_request(url, method, headers, params, auth, is_raw)
             else:
                 response_wrapper = http_client.request(url, method, headers, params, is_raw)

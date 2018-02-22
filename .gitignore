@@ -7,3 +7,4 @@ rester/examples/dma-api/
 .pydevproject
 Rester.egg-info
 
+.DS_Store

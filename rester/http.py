@@ -31,7 +31,7 @@ class HttpClient(object):
         if response.status_code < 300:
             emit = self.logger.debug
         else:
-            emit = self.logger.warn
+            emit = self.logger.warning
         emit('Response Headers: %s', str(response.headers))
         if is_raw:
             emit('Response:\n%s\n' + response.text)
