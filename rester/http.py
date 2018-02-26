@@ -23,7 +23,7 @@ class HttpClient(object):
             raise
         response = func(api_url, headers=headers, params=params, **self.extra_request_opts)
 
-        if is_raw or 'application/json' not in response.headers['content-type'] or 'application/problem+json' not in response.headers['content-type']:
+        if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
         else:    
             payload = response.json()
@@ -53,8 +53,8 @@ class HttpClient(object):
             self.logger.error('undefined HTTP method!!! %s', method)
             raise
         response = func(api_url, headers=headers, params=params, auth=auth, **self.extra_request_opts)
-
-        if is_raw or 'application/json' not in response.headers['content-type'] or 'application/problem+json' not in response.headers['content-type']:
+        self.logger.info(response)
+        if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
         else:
             payload = response.json()
