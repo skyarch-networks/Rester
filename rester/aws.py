@@ -30,7 +30,7 @@ class aws_login:
 
         client = boto3.client('cognito-identity', region_name=region)
         cognito_identity_id = client.get_id(
-            AccountId=account_id,
+            AccountId=str(account_id),
             IdentityPoolId=pool_id,
             Logins=logins
         )
