@@ -72,6 +72,9 @@ class TestCaseExec(object):
     def _build_param_dict(self, test_step):
         params = {}
         if hasattr(test_step, 'params') and test_step.params is not None:
+            # JSON は String のまま
+            if isinstance(test_step.params, str):
+                return test_step.params
             for key, value in test_step.params.items().items():
                 params[key] = self.case.variables.expand(value)
         return params

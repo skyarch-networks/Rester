@@ -21,7 +21,15 @@ class HttpClient(object):
         except AttributeError:
             self.logger.error('undefined HTTP method!!! %s', method)
             raise
-        response = func(api_url, headers=headers, params=params, **self.extra_request_opts)
+
+        # String なら JSON として data に載せる
+        if isinstance(params, str):
+            data = params
+            params = None
+        else:
+            data = None
+
+        response = func(api_url, headers=headers, params=params, data=data, **self.extra_request_opts)
 
         if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
@@ -52,7 +60,15 @@ class HttpClient(object):
         except AttributeError:
             self.logger.error('undefined HTTP method!!! %s', method)
             raise
-        response = func(api_url, headers=headers, params=params, auth=auth, **self.extra_request_opts)
+
+        # String なら JSON として data に載せる
+        if isinstance(params, str):
+            data = params
+            params = None
+        else:
+            data = None
+
+        response = func(api_url, headers=headers, params=params, data=data, auth=auth, **self.extra_request_opts)
         self.logger.info(response)
         if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
