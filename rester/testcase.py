@@ -55,14 +55,18 @@ class ApiTestCaseRunner:
             if result.get('failed'):
                 c = bcolors.FAIL
 
-            print(c, result.get('name'), end=' ')
+            print(c, "filename : %s " %(result.get('name')), end=' ')
             for k in ['passed', 'failed', 'skipped']:
                 if k == 'passed':
+                    c = bcolors.OKGREEN
+                    print(c, end=' ')
                     for res in result.get(k):
-                        print("\n%s: %s \n" % (k, res), end=' ')
+                        print("\n %s: %s " % (k, res), end=' ')
                 else:
+                    c = bcolors.FAIL
+                    print(c, end=' ')
                     for res in result.get(k):
-                        print("\n%s: %s \n" % (k, res['name']), end=' ')
+                        print("\n %s: %s " % (k, res['name']), end=' ')
             print(bcolors.ENDC)
             #print c, yaml.dump(result, default_flow_style=False,), bcolors.ENDC
 
