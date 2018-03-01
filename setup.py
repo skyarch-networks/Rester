@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='Rester',
-    version='1.0.2.5',
+    version='1.0.2.a',
     author='Shota Tsunehiro',
     author_email='tomoka319@gmail.com',
     url='https://github.com/skyarch-networks/rester',

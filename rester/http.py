@@ -1,7 +1,6 @@
 from logging import getLogger
 from rester.struct import ResponseWrapper
 import json
-from requests_aws4auth import AWS4Auth
 import requests
 
 
@@ -24,8 +23,12 @@ class HttpClient(object):
 
         # String なら JSON として data に載せる
         if isinstance(params, str):
-            data = params
-            params = None
+            try:
+                json.loads(params)
+                data = params
+                params = None
+            except json.decoder.JSONDecodeError:
+                data = None
         else:
             data = None
 
@@ -63,13 +66,17 @@ class HttpClient(object):
 
         # String なら JSON として data に載せる
         if isinstance(params, str):
-            data = params
-            params = None
+            try:
+                json.loads(params)
+                data = params
+                params = None
+            except json.decoder.JSONDecodeError:
+                data = None
         else:
             data = None
 
         response = func(api_url, headers=headers, params=params, data=data, auth=auth, **self.extra_request_opts)
-        self.logger.info(response)
+        self.logger.info(response.text)
         if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
         else:
