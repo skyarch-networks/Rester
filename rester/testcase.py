@@ -57,7 +57,12 @@ class ApiTestCaseRunner:
 
             print(c, result.get('name'), end=' ')
             for k in ['passed', 'failed', 'skipped']:
-                print("%s: %d " % (k, len(result.get(k))), end=' ')
+                if k == 'passed':
+                    for res in result.get(k):
+                        print("\n%s: %s \n" % (k, res), end=' ')
+                else:
+                    for res in result.get(k):
+                        print("\n%s: %s \n" % (k, res['name']), end=' ')
             print(bcolors.ENDC)
             #print c, yaml.dump(result, default_flow_style=False,), bcolors.ENDC
 
