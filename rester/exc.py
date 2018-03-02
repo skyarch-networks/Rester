@@ -110,6 +110,8 @@ class TestCaseExec(object):
             url = self.case.variables.expand(test_step.apiUrl)
             self.logger.debug('Evaluated URL : %s', url)
 
+            print("\n", test_step.name)
+
             # Add Aws Token from cognito
 
             if token is not None and auth is not None:

@@ -89,7 +89,9 @@ class HttpClient(object):
         emit('Response Headers: %s', str(response.headers))
         if is_raw:
             emit('Response:\n%s\n' + response.text)
+            print(response.text)
         else:
             emit('Response:\n%s\n' + json.dumps(payload, sort_keys=True, indent=2))
+            print(json.dumps(payload, sort_keys=True, indent=2))
 
         return ResponseWrapper(response.status_code, payload, response.headers)
