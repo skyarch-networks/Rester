@@ -2,7 +2,7 @@ from logging import getLogger
 from rester.http import HttpClient
 from rester.struct import DictWrapper
 from testfixtures import log_capture
-from rester.aws import aws_login
+from rester.aws import AWSLogin
 import collections
 import re
 import traceback
@@ -29,10 +29,11 @@ class TestCaseExec(object):
         values = self.case.variables._variables
         if values.keys() >= {'username', 'password', 'client_id', 'account_id', 'region_name', 'identity_pool_id',
                              'user_pool_id'}:
-            auth, token = aws_login.cognito_login(self, values['username'], values['password'],
-                                                  values['identity_pool_id'], values['client_id'], values['region_name'], values['account_id'], values['user_pool_id'])
+            auth, token = AWSLogin.cognito_login(values['username'], values['password'], values['identity_pool_id'],
+                                                 values['client_id'], values['region_name'], values['account_id'],
+                                                 values['user_pool_id'])
         elif values.keys() >= {'region_name', 'identity_pool_id'}:
-           auth, token = aws_login.cognito_auth(self, values['region_name'], values['identity_pool_id'])
+           auth, token = AWSLogin.cognito_auth(values['region_name'], values['identity_pool_id'])
 
         self.case.variables._variables['__token'] = token
 
@@ -212,13 +213,13 @@ class TestCaseExec(object):
                 assert_literal_expr = "{}:{{{}}} {} {}".format(key, json_eval_expr, final_lg_op, value)
                 self.logger.debug('     ---> Assert_expr : ' + assert_expr)
                 assert_result = eval(assert_expr)
-            elif final_lg_op != 'exec':
+            elif final_lg_op == 'in':
                 assert_literal_expr = "{}:{{{}}} {} {}".format(key, json_eval_expr, final_lg_op, value)
                 li = value.split(',')
                 num = 0
                 for item in li:
                     if json_eval_expr.find(item) != -1:
-                        num = num + 1
+                        num += 1
                 if num == len(li):
                     assert_result = True
                 else:

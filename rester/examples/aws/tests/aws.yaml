@@ -14,7 +14,7 @@ testSteps:
       headers:
         status: 200
       payload:
-        "message": "xxxxxxx"
+        "message": "-in xxxx,yyyy"
 
   - name: "Get json data"  # Example of a Failed Test
     apiUrl: "{baseApiUrl}/xxxxx"

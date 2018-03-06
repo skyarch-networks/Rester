@@ -4,10 +4,11 @@ from warrant.aws_srp import AWSSRP
 from requests_aws4auth import AWS4Auth
 
 
-class aws_login:
+class AWSLogin(object):
     logger = getLogger(__name__)
 
-    def cognito_auth(self, region, identity_pool_id):
+    @staticmethod
+    def cognito_auth(region, identity_pool_id):
         boto3.setup_default_session(region_name=region)
         identity = boto3.client('cognito-identity', region_name=region)
         response = identity.get_id(IdentityPoolId=identity_pool_id)
@@ -21,7 +22,8 @@ class aws_login:
         service = 'execute-api'
         return AWS4Auth(accesskey, secretkey, region, service, session_token=session_token), session_token
 
-    def cognito_login(self, username, password, pool_id, client_id, region, account_id, user_pool_id):
+    @staticmethod
+    def cognito_login(username, password, pool_id, client_id, region, account_id, user_pool_id):
         aws = AWSSRP(username=username, password=password, pool_id=user_pool_id, client_id=client_id, pool_region=region)
         tokens = aws.authenticate_user()
         id_token = tokens['AuthenticationResult']['IdToken']
