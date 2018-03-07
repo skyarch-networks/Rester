@@ -1,4 +1,6 @@
 .idea/
+*.iml
+venv/
 
 rester/examples/dma-api/
 

@@ -12,8 +12,12 @@ class HttpClient(object):
         self.extra_request_opts = kwargs
 
     def request(self, api_url, method, headers, params, is_raw):
+        req_header = "Response Headers: \n  {\n"
+        for key, value in headers.items():
+            req_header += ('    {}: {}\n'.format(key, value))
+        req_header += "  }"
         self.logger.info(
-            '\n Invoking REST Call... api_url: %s, method: %s, headers: %s ', api_url, method, headers)
+            '\n Invoking REST Call... \n  api_url: %s,\n  method: %s,\n  headers: %s', api_url, method, req_header)
 
         try:
             func = getattr(requests, method)
@@ -36,27 +40,36 @@ class HttpClient(object):
 
         if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
-        else:    
+        else:
             payload = response.json()
 
         if response.status_code < 300:
             emit = self.logger.debug
         else:
-            emit = self.logger.warning
-        emit('Response Headers: %s', str(response.headers))
+            emit = self.logger.warn
+        Header = "Response Headers: \n{\n"
+        for key, value in response.headers.items():
+            Header += ('  {}: {}\n'.format(key, value))
+        emit(Header + "}")
         if is_raw:
             emit('Response:\n%s\n' + response.text)
+            print(response.text)
         else:
-            emit('Response:\n%s\n' + json.dumps(payload, sort_keys=True, indent=2))
+            emit('Response:\n' + json.dumps(payload, sort_keys=True, indent=2) + '\n')
+            print(json.dumps(payload, sort_keys=True, indent=2))
 
         return ResponseWrapper(response.status_code, payload, response.headers)
 
     # Add aws request
 
     def aws_request(self, api_url, method, headers, params, auth, is_raw):
+        req_header = "Response Headers: \n  {\n"
+        for key, value in headers.items():
+            req_header += ('    {}: {}\n'.format(key, value))
+        req_header += "  }"
         self.logger.info(
-            '\n Invoking REST Call... api_url: %s, method: %s, headers: %s, authrization: %s',
-            api_url, method, headers, auth)
+            '\n Invoking REST Call... \n  api_url: %s,\n  method: %s,\n  headers: %s,\n  authrization: %s',
+            api_url, method, req_header, auth)
 
         try:
             func = getattr(requests, method)
@@ -76,7 +89,6 @@ class HttpClient(object):
             data = None
 
         response = func(api_url, headers=headers, params=params, data=data, auth=auth, **self.extra_request_opts)
-        self.logger.info(response.text)
         if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
         else:
@@ -86,12 +98,15 @@ class HttpClient(object):
             emit = self.logger.debug
         else:
             emit = self.logger.warn
-        emit('Response Headers: %s', str(response.headers))
+        Header = "Response Headers: \n{\n"
+        for key, value in response.headers.items():
+            Header += ('  {}: {}\n'.format(key, value))
+        emit(Header + "}")
         if is_raw:
             emit('Response:\n%s\n' + response.text)
             print(response.text)
         else:
-            emit('Response:\n%s\n' + json.dumps(payload, sort_keys=True, indent=2))
+            emit('Response:\n' + json.dumps(payload, sort_keys=True, indent=2) + '\n')
             print(json.dumps(payload, sort_keys=True, indent=2))
 
         return ResponseWrapper(response.status_code, payload, response.headers)
