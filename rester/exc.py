@@ -6,7 +6,7 @@ from rester.aws import AWSLogin
 import collections
 import re
 import traceback
-
+from rester.report import ResultReport
 
 Failure = collections.namedtuple("Failure", "errors output")
 
@@ -20,6 +20,7 @@ class TestCaseExec(object):
         self.passed = []
         self.failed = []
         self.skipped = []
+        self.reports = []
 
     def __call__(self):
         # What was this?
@@ -38,6 +39,9 @@ class TestCaseExec(object):
         self.case.variables._variables['__token'] = token
 
         for step in self.case.steps:
+            self.step_report = ResultReport()
+            self.step_report.name = step.name
+            self.step_report.method = step.method
             self.logger.debug('Test Step Name : %s', step.name)
             if step.get('skip', False):
                 self.logger.info('\n=======> Skipping test case : ' + step.name)
@@ -47,7 +51,7 @@ class TestCaseExec(object):
             @log_capture()
             def _run(l):
 
-                failures = self._execute_test_step(step, auth, token)
+                failures = self._execute_test_step(step, auth, token, self.step_report)
                 return failures, l
 
             f, logs = _run()
@@ -55,6 +59,7 @@ class TestCaseExec(object):
                 self.failed.append((step, Failure(f.errors, "".join(self._format_logs(logs)))))
             else:
                 self.passed.append(step)
+            self.reports.append(self.step_report)
 
         return self._result()
 
@@ -90,7 +95,7 @@ class TestCaseExec(object):
                 self.logger.info(data[key])
         return data
 
-    def _execute_test_step(self, test_step, auth, token):
+    def _execute_test_step(self, test_step, auth, token, report):
         http_client = HttpClient(**self.case.request_opts)
         failures = Failure([], None)
         try:
@@ -105,11 +110,19 @@ class TestCaseExec(object):
                 for key, value in test_step.headers.items().items():
                     headers[key] = self.case.variables.expand(value)
 
+
             # process and set up params
             params = self._build_param_dict(test_step)
-
             url = self.case.variables.expand(test_step.apiUrl)
             self.logger.debug('Evaluated URL : %s', url)
+
+            # レポートの処理
+            report.header = headers
+            if isinstance(params, dict):
+                report.query = params
+            else:
+                report.body = params
+            report.url = url
 
             print("\n", test_step.name)
 
@@ -120,6 +133,10 @@ class TestCaseExec(object):
                 response_wrapper = http_client.aws_request(url, method, headers, params, auth, is_raw)
             else:
                 response_wrapper = http_client.request(url, method, headers, params, is_raw)
+
+            headers = response_wrapper.headers.items()
+            report.response_header = headers
+            pass
 
             # expected_status = getattr(getattr(test_step, 'asserts'), 'status', 200)
             # if response_wrapper.status != expected_status:
