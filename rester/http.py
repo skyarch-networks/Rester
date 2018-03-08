@@ -12,7 +12,7 @@ class HttpClient(object):
         self.extra_request_opts = kwargs
 
     def request(self, api_url, method, headers, params, is_raw):
-        req_header = "Response Headers: \n  {\n"
+        req_header = "{\n"
         for key, value in headers.items():
             req_header += ('    {}: {}\n'.format(key, value))
         req_header += "  }"
@@ -63,7 +63,7 @@ class HttpClient(object):
     # Add aws request
 
     def aws_request(self, api_url, method, headers, params, auth, is_raw):
-        req_header = "Response Headers: \n  {\n"
+        req_header = "{\n"
         for key, value in headers.items():
             req_header += ('    {}: {}\n'.format(key, value))
         req_header += "  }"
