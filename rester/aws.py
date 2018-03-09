@@ -27,6 +27,7 @@ class AWSLogin(object):
         aws = AWSSRP(username=username, password=password, pool_id=user_pool_id, client_id=client_id, pool_region=region)
         tokens = aws.authenticate_user()
         id_token = tokens['AuthenticationResult']['IdToken']
+        access_token = tokens['AuthenticationResult']['AccessToken']
 
         logins = {'cognito-idp.' + region + '.amazonaws.com/' + user_pool_id: id_token}
 
@@ -45,4 +46,4 @@ class AWSLogin(object):
         secretkey = credentials['Credentials']['SecretKey']
         session_token = credentials['Credentials']['SessionToken']
         service = 'execute-api'
-        return AWS4Auth(accesskey, secretkey, region, service, session_token=session_token), session_token
+        return AWS4Auth(accesskey, secretkey, region, service, session_token=session_token), session_token, access_token

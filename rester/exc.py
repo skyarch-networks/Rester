@@ -27,16 +27,19 @@ class TestCaseExec(object):
         #skip_all_subsequent_tests = False
         auth = ""
         token = ""
+        access_token = ""
         values = self.case.variables._variables
         if values.keys() >= {'username', 'password', 'client_id', 'account_id', 'region_name', 'identity_pool_id',
                              'user_pool_id'}:
-            auth, token = AWSLogin.cognito_login(values['username'], values['password'], values['identity_pool_id'],
-                                                 values['client_id'], values['region_name'], values['account_id'],
-                                                 values['user_pool_id'])
+            auth, token, access_token = AWSLogin.cognito_login(values['username'], values['password'],
+                                                               values['identity_pool_id'],values['client_id'],
+                                                               values['region_name'], values['account_id'],
+                                                               values['user_pool_id'])
         elif values.keys() >= {'region_name', 'identity_pool_id'}:
            auth, token = AWSLogin.cognito_auth(values['region_name'], values['identity_pool_id'])
 
         self.case.variables._variables['__token'] = token
+        self.case.variables._variables['__access_token'] = access_token
 
         for step in self.case.steps:
             self.step_report = ResultReport()
@@ -135,7 +138,10 @@ class TestCaseExec(object):
                 response_wrapper = http_client.request(url, method, headers, params, is_raw)
 
             headers = response_wrapper.headers.items()
-            report.response_header = headers
+            try:
+                report.response_header = headers
+            except AttributeError:
+                report.response_header = ""
             pass
 
             # expected_status = getattr(getattr(test_step, 'asserts'), 'status', 200)
