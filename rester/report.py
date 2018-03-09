@@ -68,5 +68,5 @@ class ResultReport(object):
         return self.__response_header
 
     @response_header.setter
-    def body(self, response_header: dict):
+    def response_header(self, response_header: dict):
         self.__response_header = response_header

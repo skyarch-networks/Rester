@@ -138,10 +138,7 @@ class TestCaseExec(object):
                 response_wrapper = http_client.request(url, method, headers, params, is_raw)
 
             headers = response_wrapper.headers.items()
-            try:
-                report.response_header = headers
-            except AttributeError:
-                report.response_header = ""
+            report.response_header = headers
             pass
 
             # expected_status = getattr(getattr(test_step, 'asserts'), 'status', 200)
