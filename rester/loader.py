@@ -13,7 +13,7 @@ class TestSuite(object):
         self.load()
 
     def load(self):
-        with open(self.filename) as fh:
+        with open(self.filename, encoding='utf-8') as fh:
             data = load(self.filename, fh)
             self._load(data)
 
@@ -45,7 +45,7 @@ class TestCase(object):
         return self.variables.get('request_opts', {})
 
     def load(self):
-        with open(self.filename) as fh:
+        with open(self.filename, encoding='utf-8') as fh:
             data = load(self.filename, fh)
             self._load(data)
 
