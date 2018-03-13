@@ -131,7 +131,7 @@ class TestCaseExec(object):
 
             # Add Aws Token from cognito
 
-            if token is not None and auth is not None:
+            if token != "" and auth != "":
                 headers.setdefault("x-amz-security-token", token)
                 response_wrapper = http_client.aws_request(url, method, headers, params, auth, is_raw)
             else:
@@ -206,7 +206,7 @@ class TestCaseExec(object):
 
             # Check for logical operators
             logic_ops = {'-gt':'>', '-ge':'>=', '-lt':'<', '-le':'<=', '-ne':'!=', '-eq':'==',
-                         'exec': 'exec', '-in': 'in'}
+                         'exec': 'exec', '-in': 'in', '-or': 'or'}
             lg_op_expr = check_for_logical_op(value)
             if lg_op_expr:
                 self.logger.debug("---> Found lg_op_expr : " + lg_op_expr)
@@ -228,11 +228,12 @@ class TestCaseExec(object):
             if isinstance(json_eval_expr, str):
                 value = str(value)
             # construct the logical assert expression
-            if final_lg_op != 'exec' and final_lg_op != 'in':
+            if final_lg_op != 'exec' and final_lg_op != 'in' and final_lg_op != 'or':
                 assert_expr = 'json_eval_expr {0} value'.format(final_lg_op)
                 assert_literal_expr = "{}:{{{}}} {} {}".format(key, json_eval_expr, final_lg_op, value)
                 self.logger.debug('     ---> Assert_expr : ' + assert_expr)
                 assert_result = eval(assert_expr)
+
             elif final_lg_op == 'in':
                 assert_literal_expr = "{}:{{{}}} {} {}".format(key, json_eval_expr, final_lg_op, value)
                 li = value.split(',')
@@ -244,6 +245,19 @@ class TestCaseExec(object):
                     assert_result = True
                 else:
                     assert_result = False
+
+            elif final_lg_op == 'or':
+                assert_literal_expr = "{}:{{{}}} {} {}".format(key, json_eval_expr, final_lg_op, value)
+                li = value.split(',')
+                num = 0
+                for item in li:
+                    if json_eval_expr == item:
+                        num += 1
+                if num != 0:
+                    assert_result = True
+                else:
+                    assert_result = False
+
             else:
                 assert_expr = 'exec_result = {0}'.format(value)
                 assert_literal_expr = '"f({0}) <- {1}"'.format(json_eval_expr, value)
@@ -274,7 +288,7 @@ def _evaluate(clause, value):
 def check_for_logical_op(expression):
     if expression and isinstance(expression, str):
         #self.logger.debug("_check_for_logical_op : expression %s", expression)
-        oprtr_regex = re.compile("-lt|-le|-gt|-ge|-eq|-ne|exec|-in")
+        oprtr_regex = re.compile("-lt|-le|-gt|-ge|-eq|-ne|exec|-in|-or")
         match = re.match(oprtr_regex, expression)
         if match:
             return match.group()
