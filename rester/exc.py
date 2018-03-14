@@ -7,6 +7,7 @@ import collections
 import re
 import traceback
 from rester.report import ResultReport
+import json
 
 Failure = collections.namedtuple("Failure", "errors output")
 
@@ -21,6 +22,7 @@ class TestCaseExec(object):
         self.failed = []
         self.skipped = []
         self.reports = []
+        self.step_report = ResultReport()
 
     def __call__(self):
         # What was this?
@@ -42,7 +44,6 @@ class TestCaseExec(object):
         self.case.variables._variables['__access_token'] = access_token
 
         for step in self.case.steps:
-            self.step_report = ResultReport()
             self.step_report.name = step.name
             self.step_report.method = step.method
             self.logger.debug('Test Step Name : %s', step.name)
@@ -54,14 +55,16 @@ class TestCaseExec(object):
             @log_capture()
             def _run(l):
 
-                failures = self._execute_test_step(step, auth, token, self.step_report)
+                failures = self._execute_test_step(step, auth, token)
                 return failures, l
 
             f, logs = _run()
             if f:
                 self.failed.append((step, Failure(f.errors, "".join(self._format_logs(logs)))))
+                self.step_report.test_result = "failed"
             else:
                 self.passed.append(step)
+                self.step_report.test_result = "passed"
             self.reports.append(self.step_report)
 
         return self._result()
@@ -98,7 +101,7 @@ class TestCaseExec(object):
                 self.logger.info(data[key])
         return data
 
-    def _execute_test_step(self, test_step, auth, token, report):
+    def _execute_test_step(self, test_step, auth, token):
         http_client = HttpClient(**self.case.request_opts)
         failures = Failure([], None)
         try:
@@ -120,12 +123,12 @@ class TestCaseExec(object):
             self.logger.debug('Evaluated URL : %s', url)
 
             # レポートの処理
-            report.header = headers
+            self.step_report.header = headers
             if isinstance(params, dict):
-                report.query = params
+                self.step_report.query = params
             else:
-                report.body = params
-            report.url = url
+                self.step_report.body = params
+            self.step_report.url = url
 
             print("\n", test_step.name)
 
@@ -138,7 +141,9 @@ class TestCaseExec(object):
                 response_wrapper = http_client.request(url, method, headers, params, is_raw)
 
             headers = response_wrapper.headers.items()
-            report.response_header = headers
+            self.step_report.response_header = headers
+
+
             pass
 
             # expected_status = getattr(getattr(test_step, 'asserts'), 'status', 200)
@@ -278,6 +283,26 @@ class TestCaseExec(object):
         self.logger.debug("evaled value: {}".format(getattr(response, value, '')))
         self.case.variables.add_variable(key, getattr(response, value, ''))
 
+    def get_json(self, filename):
+        """
+        dump json
+        :return:
+        """
+        self._results = []
+        self._query = []
+        for _result in self.reports:
+            self._res_obj = {"name": _result.name,
+                                 "url": _result.url,
+                                 "method": _result.method,
+                                 "result": _result.test_result,
+                                "query": _result.query
+                            }
+            #for k, v in self._result.query:
+
+            self._results.append(self._res_obj)
+        self.obj = {"test_case":filename, "results": self._results}
+        return json.dumps(self.obj)
+
 def _evaluate(clause, value):
     assert_expr = 'result = {0}'.format(clause)
     #self.logger.debug('     ---> Assert_exec : ' + assert_expr)
@@ -292,3 +317,5 @@ def check_for_logical_op(expression):
         match = re.match(oprtr_regex, expression)
         if match:
             return match.group()
+
+

@@ -14,6 +14,7 @@ class ResultReport(object):
         self.__response_header = {}  # レスポンスの辞書が入る配列
         self.__response_body = []  # レスポンスの辞書が入る配列
         self.__evaluation = []  # 評価結果が入る配列
+        self.__test_result = ""  # Pass or Fail or Skip
 
     @property
     def name(self):
@@ -70,3 +71,11 @@ class ResultReport(object):
     @response_header.setter
     def response_header(self, response_header: dict):
         self.__response_header = response_header
+
+    @property
+    def test_result(self):
+        return self.__test_result
+
+    @test_result.setter
+    def test_result(self, test_result: str):
+        self.__test_result = test_result

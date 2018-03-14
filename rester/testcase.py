@@ -3,6 +3,7 @@ from rester.exc import TestCaseExec
 from rester.http import HttpClient
 from rester.loader import TestSuite, TestCase
 import yaml
+import os.path
 
 class bcolors:
     HEADER = '\033[95m'
@@ -32,6 +33,8 @@ class ApiTestCaseRunner:
     def _run_case(self, case):
         tc = TestCaseExec(case, self.options)
         self.results.append(tc())
+        s = tc.get_json(os.path.basename(case.filename))
+        pass
 
     def display_report(self):
         for result in self.results:
