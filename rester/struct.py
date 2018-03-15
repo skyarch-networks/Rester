@@ -44,4 +44,5 @@ class ResponseWrapper(object):
         self.body = DictWrapper(data)
         self.headers = DictWrapper(headers)
         self.headers.status = status
+        self.rawdata = data
 

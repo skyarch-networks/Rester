@@ -1,3 +1,5 @@
+import datetime
+
 class ResultReport(object):
     '''
     テストケース(ステップ）の結果
@@ -15,6 +17,12 @@ class ResultReport(object):
         self.__response_body = []  # レスポンスの辞書が入る配列
         self.__evaluation = []  # 評価結果が入る配列
         self.__test_result = ""  # Pass or Fail or Skip
+        self.__starttime = datetime.datetime.utcnow().isoformat()+'Z' # 開始時間（オブジェクト作成時間）
+        self.__payload = {}
+
+    @property
+    def start_time(self):
+        return self.__starttime
 
     @property
     def name(self):
@@ -71,6 +79,14 @@ class ResultReport(object):
     @response_header.setter
     def response_header(self, response_header: dict):
         self.__response_header = response_header
+
+    @property
+    def payload(self):
+        return self.__payload
+
+    @payload.setter
+    def payload(self, payload: dict):
+        self.__payload = payload
 
     @property
     def test_result(self):

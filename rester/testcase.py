@@ -4,6 +4,8 @@ from rester.http import HttpClient
 from rester.loader import TestSuite, TestCase
 import yaml
 import os.path
+import codecs
+import json
 
 class bcolors:
     HEADER = '\033[95m'
@@ -33,8 +35,19 @@ class ApiTestCaseRunner:
     def _run_case(self, case):
         tc = TestCaseExec(case, self.options)
         self.results.append(tc())
-        s = tc.get_json(os.path.basename(case.filename))
+        case_name = os.path.basename(case.filename)
+        res_dict = tc.get_dict(case_name)
+        self._export_json(res_dict, case_name)
+        # exportJSONで吐き出し
+    def _export_json(self, res_dict, case_name):
+        f_name = "result_%s.json" % case_name
+
+        str = json.dumps(res_dict, indent=4, ensure_ascii=False)
+        with open(f_name, 'w') as f:
+            # JSONへの書き込み
+            json.dump(res_dict, f,ensure_ascii=False,indent= 4)
         pass
+        return
 
     def display_report(self):
         for result in self.results:
@@ -71,26 +84,6 @@ class ApiTestCaseRunner:
                     for res in result.get(k):
                         print("\n %s: %s " % (k, res['name']), end=' ')
             print(bcolors.ENDC)
-            #print c, yaml.dump(result, default_flow_style=False,), bcolors.ENDC
-
-
-            
-
-            #self.logger.info("name: {}\n{}\n", name, )
-#            test_case = exc.case
-#            print "\n\n ===> TestCase : {0}, status : {1}".format(test_case.name, "Passed" if test_case.passed == True else "Failed!")
-#            for test_step in test_case.testSteps:
-#                #self.logger.info('\n     ====> Test Step name : %s, status : %s, message : %s', test_step.name, test_step.result.status, test_step.result.message)
-#                print "\n\n     ====> Test Step : {0}".format(test_step.name)
-#
-#                if hasattr(test_step, 'result'):
-#                    print "\n\n         ====> {0}!".format(test_step.result.message)
-#
-#                if hasattr(test_step, 'assertResults'):
-#                    for assert_result in test_step.assertResults:
-#                        #self.logger.debug('\n assert_result : ' + str(assert_result))
-#                        print "\n        ---> {0}".format(assert_result['message'])
-
 
 
 

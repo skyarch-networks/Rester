@@ -22,7 +22,6 @@ class TestCaseExec(object):
         self.failed = []
         self.skipped = []
         self.reports = []
-        self.step_report = ResultReport()
 
     def __call__(self):
         # What was this?
@@ -44,6 +43,7 @@ class TestCaseExec(object):
         self.case.variables._variables['__access_token'] = access_token
 
         for step in self.case.steps:
+            self.step_report = ResultReport()
             self.step_report.name = step.name
             self.step_report.method = step.method
             self.logger.debug('Test Step Name : %s', step.name)
@@ -143,9 +143,10 @@ class TestCaseExec(object):
             headers = response_wrapper.headers.items()
             self.step_report.response_header = headers
 
+            self.raw_payload = response_wrapper.rawdata
 
             pass
-
+            print()
             # expected_status = getattr(getattr(test_step, 'asserts'), 'status', 200)
             # if response_wrapper.status != expected_status:
             #     failures.errors.append("status(%s) != expected status(%s)" % (response_wrapper.status, expected_status))
@@ -283,7 +284,7 @@ class TestCaseExec(object):
         self.logger.debug("evaled value: {}".format(getattr(response, value, '')))
         self.case.variables.add_variable(key, getattr(response, value, ''))
 
-    def get_json(self, filename):
+    def get_dict(self, filename):
         """
         dump json
         :return:
@@ -292,16 +293,23 @@ class TestCaseExec(object):
         self._query = []
         for _result in self.reports:
             self._res_obj = {"name": _result.name,
-                                 "url": _result.url,
-                                 "method": _result.method,
-                                 "result": _result.test_result,
-                                "query": _result.query
+                             "date": _result.start_time,
+                             "url": _result.url,
+                             "result": _result.test_result,
+                             "query": _result.query,
+                             "request": {
+                                "method": _result.method,
+                                "header": _result.header
+                             },
+                             "response": {
+                                 "header": _result.response_header,
+                                 "payload": json.dumps(self.raw_payload, indent=4, ensure_ascii=False)
+                             }
                             }
-            #for k, v in self._result.query:
 
             self._results.append(self._res_obj)
         self.obj = {"test_case":filename, "results": self._results}
-        return json.dumps(self.obj)
+        return self.obj
 
 def _evaluate(clause, value):
     assert_expr = 'result = {0}'.format(clause)
