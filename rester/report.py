@@ -95,3 +95,12 @@ class ResultReport(object):
     @test_result.setter
     def test_result(self, test_result: str):
         self.__test_result = test_result
+
+    @property
+    def evaluation(self):
+        return self.__evaluation
+
+    @evaluation.setter
+    def evaluation(self, result: str):
+        self.__evaluation.append(result)
+

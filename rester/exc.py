@@ -164,9 +164,12 @@ class TestCaseExec(object):
 
         except Exception as inst:
             failures.errors.append(traceback.format_exc())
+            assert_message = 'ERROR !!! TestStep %s Failed to execute !!!  %s \
+                        \n !!! Will ignore all assignment statements as part of TestStep' % (test_step.name, inst)
             self.logger.error('ERROR !!! TestStep %s Failed to execute !!!  %s \
                         \n !!! Will ignore all assignment statements as part of TestStep', test_step.name, inst)
             self.logger.exception('Exception')
+            self.step_report.evaluation = assert_message
 
         if failures.errors:
             return failures
@@ -276,9 +279,11 @@ class TestCaseExec(object):
                 assert_message = '{} Assert Statement : {}   ---> Fail!'.format(section, assert_literal_expr)
                 self.logger.error('%s', assert_message)
                 failures.errors.append(assert_message)
+                self.step_report.evaluation = assert_message
             else:
                 assert_message = '{} Assert Statement : {}  ----> Pass!'.format(section, assert_literal_expr)
                 self.logger.info('%s', assert_message)
+                self.step_report.evaluation = assert_message
 
     def _process_post_asserts(self, response, key, value):
         self.logger.debug("evaled value: {}".format(getattr(response, value, '')))
@@ -304,7 +309,8 @@ class TestCaseExec(object):
                              "response": {
                                  "header": _result.response_header,
                                  "payload": json.dumps(self.raw_payload, indent=4, ensure_ascii=False)
-                             }
+                             },
+                             "evaluation": _result.evaluation
                             }
 
             self._results.append(self._res_obj)

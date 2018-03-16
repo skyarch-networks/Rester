@@ -40,7 +40,10 @@ class ApiTestCaseRunner:
         self._export_json(res_dict, case_name)
         # exportJSONで吐き出し
     def _export_json(self, res_dict, case_name):
-        f_name = "result_%s.json" % case_name
+        n = os.path.basename(case_name)
+#        n.replace(r".yaml", r".json")
+        f_name = "result_%s" %  n.replace(r".yaml", r".json")
+
 
         str = json.dumps(res_dict, indent=4, ensure_ascii=False)
         with open(f_name, 'w') as f:
