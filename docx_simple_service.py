@@ -77,6 +77,14 @@ class SimpleDocxService:
         """図を挿入する"""
         self.document.add_picture(filename, width=Inches(inch))
 
+    def add_page_break(self):
+        """改ページする"""
+        self.document.add_page_break()
+
+    def add_table(self, row, col):
+        table = self.document.add_table(row, col)
+        return table
+
     def save(self, name):
         """docxファイルとして出力"""
         self.document.save(name)
