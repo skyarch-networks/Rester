@@ -22,6 +22,7 @@ class TestCaseExec(object):
         self.failed = []
         self.skipped = []
         self.reports = []
+        self.raw_payload = ""
 
     def __call__(self):
         # What was this?

@@ -62,6 +62,7 @@ class HttpClient(object):
 
     # Add aws request
 
+
     def aws_request(self, api_url, method, headers, params, auth, is_raw):
         req_header = "{\n"
         for key, value in headers.items():
@@ -84,11 +85,16 @@ class HttpClient(object):
                 data = params
                 params = None
             except json.decoder.JSONDecodeError:
-                data = None
+                data = params
+                params = None
         else:
             data = None
 
-        response = func(api_url, headers=headers, params=params, data=data, auth=auth, **self.extra_request_opts)
+        if isinstance(params, dict):
+            params_str = "&".join("%s=%s" % (k, v) for k, v in params.items())
+            response = func(api_url, headers=headers, params=params_str, data=data, auth=auth, **self.extra_request_opts)
+        else:
+            response = func(api_url, headers=headers, params=params, data=data, auth=auth, **self.extra_request_opts)
         if is_raw or 'json' not in response.headers['content-type']:
             payload = {"__raw__": response.text}
         else:

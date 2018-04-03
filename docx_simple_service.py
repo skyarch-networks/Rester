@@ -12,7 +12,7 @@ from docx.shared import RGBColor
 from docx.shared import Inches
 from docx.shared import Pt
 import unicodedata
-
+import re
 class SimpleDocxService:
 
     def __init__(self):
@@ -72,6 +72,13 @@ class SimpleDocxService:
                 self.close()
 
         return Paragraph(self.document.add_paragraph())
+
+    def add_ordered_list(self, text):
+        for line in text:
+            if re.search(r"Fail!$", line):
+                self.paragraph =  self.document.add_paragraph(line, style='ListBullet')
+            else:
+                self.paragraph = self.document.add_paragraph(line, style='ListBullet')
 
     def add_picture(self, filename, inch):
         """図を挿入する"""
